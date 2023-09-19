@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment.development';
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteModalComponent } from 'src/app/delete-modal/delete-modal.component';
 import { EmployeeFormModalComponent } from 'src/app/employee-form-modal/employee-form-modal.component';
+import { PageEvent } from '@angular/material/paginator';
 
 export interface Employee {
   id: number;
@@ -22,6 +23,11 @@ export interface Employee {
 export class EmployeeTableComponent {
   employeeList: Employee [] = [];
   displayedColumns: string[] = ['firstName', 'lastName', 'salary', 'icons'];
+  employeePage: Employee [] = [];
+
+  // For first and last employee on the page
+  firstEmployee: number = 0;
+  lastEmployee: number = 10;
 
   constructor(
     private http: HttpClient,
@@ -37,12 +43,24 @@ export class EmployeeTableComponent {
     .subscribe({
       next: (res: any) => {
         this.employeeList = res
+        this.getPage();
       error: () => {
         // implement error toast?
       }
     }});
   }
   
+  private getPage() {
+    this.employeePage = this.employeeList.slice(this.firstEmployee, this.lastEmployee);
+  }
+
+  public updatePage(event: PageEvent) {
+    // Calculates page from employee indices
+    this.firstEmployee = event.pageIndex * event.pageSize;
+    this.lastEmployee = this.firstEmployee + event.pageSize;
+    this.getPage();
+  }
+
   public addEmployee() {
     const addDialogRef = this.dialog.open(EmployeeFormModalComponent, {
       restoreFocus: false,
