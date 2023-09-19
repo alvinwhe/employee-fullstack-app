@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { environment } from 'src/environments/environment.development';
 import { MatDialog } from '@angular/material/dialog';
+import { DeleteModalComponent } from 'src/app/delete-modal/delete-modal.component';
 import { EmployeeFormModalComponent } from 'src/app/employee-form-modal/employee-form-modal.component';
 
 export interface Employee {
@@ -20,8 +21,8 @@ export interface Employee {
 
 export class EmployeeTableComponent {
   employeeList: Employee [] = [];
-  displayedColumns: string[] = ['firstName', 'lastName', 'salary', 'edit', 'delete'];
-  
+  displayedColumns: string[] = ['firstName', 'lastName', 'salary', 'icons'];
+
   constructor(
     private http: HttpClient,
     private dialog: MatDialog
@@ -107,8 +108,30 @@ export class EmployeeTableComponent {
     });
   }
 
-  public deleteEmployee(any:any){
-    // placeholder
+  public deleteEmployee(employee: any){
+    const deleteDialogRef = this.dialog.open(DeleteModalComponent, {
+      restoreFocus: false,
+      data: {
+        type: "Employee",
+        value: `${employee.first_name} ${employee.last_name}`,
+      }
+    })
+
+    deleteDialogRef.afterClosed().subscribe(result => {
+      if (result == true) {
+        let headers = new HttpHeaders();
+        headers = headers.set('Content-Type', 'application/json; charset=utf-8');
+        this.http.delete(environment.rootApi+`employees/${employee.id}/delete/`)
+          .subscribe({
+            next: (res: any) => {
+              this.getEmployees();
+              // implement success toast?
+            error: () => {
+              // implement error toast?
+            }
+          }});
+      } 
+    });
   }
 
 }

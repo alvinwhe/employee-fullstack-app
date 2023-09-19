@@ -17,12 +17,14 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 import { EmployeeTableComponent } from 'src/app/employee-table/employee-table.component';
 import { EmployeeFormModalComponent } from 'src/app/employee-form-modal/employee-form-modal.component';
+import { DeleteModalComponent } from 'src/app/delete-modal/delete-modal.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     EmployeeTableComponent,
-    EmployeeFormModalComponent
+    EmployeeFormModalComponent,
+    DeleteModalComponent,
   ],
   imports: [
     BrowserModule,
