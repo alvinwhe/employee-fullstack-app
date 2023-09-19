@@ -14,6 +14,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { EmployeeTableComponent } from 'src/app/employee-table/employee-table.component';
 import { EmployeeFormModalComponent } from 'src/app/employee-form-modal/employee-form-modal.component';
@@ -40,6 +41,7 @@ import { DeleteModalComponent } from 'src/app/delete-modal/delete-modal.componen
     MatDialogModule,
     MatInputModule,
     ReactiveFormsModule,
+    MatSnackBarModule
   ],
   providers: [],
   bootstrap: [AppComponent]

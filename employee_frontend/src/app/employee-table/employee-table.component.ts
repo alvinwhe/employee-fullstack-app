@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DeleteModalComponent } from 'src/app/delete-modal/delete-modal.component';
 import { EmployeeFormModalComponent } from 'src/app/employee-form-modal/employee-form-modal.component';
 import { PageEvent } from '@angular/material/paginator';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 export interface Employee {
   id: number;
@@ -30,6 +31,7 @@ export class EmployeeTableComponent {
   lastEmployee: number = 10;
 
   constructor(
+    private notification: MatSnackBar,
     private http: HttpClient,
     private dialog: MatDialog
     ) {}
@@ -45,7 +47,7 @@ export class EmployeeTableComponent {
         this.employeeList = res
         this.getPage();
       error: () => {
-        // implement error toast?
+        this.showError();
       }
     }});
   }
@@ -84,9 +86,9 @@ export class EmployeeTableComponent {
           }).subscribe({
             next: (res: any) => {
               this.getEmployees();
-              // implement success toast?
+              this.showSuccess();
             error: () => {
-              // implement error toast?
+              this.showError();
             }
           }});
       } 
@@ -117,9 +119,9 @@ export class EmployeeTableComponent {
           }).subscribe({
             next: (res: any) => {
               this.getEmployees();
-              // implement success toast?
+              this.showSuccess();
             error: () => {
-              // implement error toast?
+              this.showError();
             }
           }});
       }
@@ -143,13 +145,24 @@ export class EmployeeTableComponent {
           .subscribe({
             next: (res: any) => {
               this.getEmployees();
-              // implement success toast?
+              this.showSuccess()
             error: () => {
-              // implement error toast?
+              this.showError();
             }
           }});
       } 
     });
   }
 
+  private showError() {
+    this.notification.open("Error", undefined, {
+      duration: 3000
+    });
+  }
+
+  private showSuccess() {
+    this.notification.open("Success", undefined, {
+      duration: 3000
+    });
+  }
 }
