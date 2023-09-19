@@ -1,25 +1,60 @@
-# Take-home Assignment (Full Stack) #
+make package.json thing in angular
+make req.txt for django
 
-### Goal: ###
-* Create an Employee Table like the one in the image below.
-* Use any front-end framework (Angular, React, Vue, ect...) or CSS library to accomplish this.
-* Implement the back-end API with the back-end framework of your choice, and a SQL database
+make sql script
+sudo service postgresql start
+sudo -u postgres psql
+create database Employees;
+CREATE USER admin WITH PASSWORD '1234';
+grant all privileges on database employees to admin;
+\q
 
-![](example.png)
+# Employee List Full Stack Project#
 
-### Functional Requirements: ###
-* Initially, list all employees that are in data.json
-  * First name, last name, and salary in currency format (ie. $42,000)
-* The ability to edit an employee
-* The ability to delete an employee
-* The ability to create a new employee
+### Setting up frontend ###
+* to run the front end, go into the frontend folder  
+`cd employee_frontend`
+* install the dependencies  
+`npm install`
+* start the server  
+`npm start &`
 
-### Technical Guidelines: ###
-* Structure your application and components in a modular/reusable way
-* Commit code with useful and informative comments
-* Your application doesn't have to use the data.json file directly, but have a SQL script to initialize your database with data found in that file
-* Implement API code to read and write to a SQL database
-* Styling: CSS or SCSS or SASS can be used, whichever you prefer (can use popular UI frameworks like Bootstrap as well)
+### Creating database ###
+* go back to the root folder  
+`cd ..`
+* install postgresql from here: https://www.postgresql.org/download/
+* start the postgresql server  
+`sudo service postgresql start`
+* use the postgres user to run the postgres cli  
+`sudo -u postgres psql`
+* run the `initiate_database.sql` script found in this root folder  
+`\i initiate_database.sql`
+* if you have trouble with permissions you can move it to the /tmp/ folder and run from there  
+`\i /tmp/initiate_database.sql`
+* quit out of psql  
+`\q`
 
-### Questions? ###
-Please reach out to me with any questions
+### Setting up backend ###
+* go to the backend folder  
+`cd employee_backend`
+* install the pip dependencies  
+`pip install -r requirements.txt`
+* use django to create database tables  
+`python3 manage.py migrate`
+* run the backend server  
+`python manage.py runserver`
+
+### Insert data into database ###
+* go back to the root folder  
+`cd ../`
+* run the postgres cli  
+`sudo -u postgres psql`
+* connect to the employee database  
+`\c employee`
+* run the `insert_database.sql` script found in this root folder  
+`\i insert_database.sql`
+* quit out of psql  
+`\q`
+
+### Finish ###
+* the front and backend should both be set up now with the data in the tables
