@@ -1,14 +1,3 @@
-make package.json thing in angular
-make req.txt for django
-
-make sql script
-sudo service postgresql start
-sudo -u postgres psql
-create database Employees;
-CREATE USER admin WITH PASSWORD '1234';
-grant all privileges on database employees to admin;
-\q
-
 # Employee List Full Stack Project#
 
 ### Setting up frontend ###
