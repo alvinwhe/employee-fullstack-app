@@ -1,7 +1,11 @@
 
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { environment } from 'src/environments/environment.development';
+import { MatDialog } from '@angular/material/dialog';
+import { DeleteModalComponent } from 'src/app/delete-modal/delete-modal.component';
+import { EmployeeFormModalComponent } from 'src/app/employee-form-modal/employee-form-modal.component';
+import { PageEvent } from '@angular/material/paginator';
 
 export interface Employee {
   id: number;
@@ -18,27 +22,134 @@ export interface Employee {
 
 export class EmployeeTableComponent {
   employeeList: Employee [] = [];
-  displayedColumns: string[] = ['firstName', 'lastName', 'salary', 'edit', 'delete'];
+  displayedColumns: string[] = ['firstName', 'lastName', 'salary', 'icons'];
+  employeePage: Employee [] = [];
 
-  constructor(private http: HttpClient) {}
+  // For first and last employee on the page
+  firstEmployee: number = 0;
+  lastEmployee: number = 10;
+
+  constructor(
+    private http: HttpClient,
+    private dialog: MatDialog
+    ) {}
 
   ngOnInit(){
-    this.http.get(environment.rootApi+"employees/")
-      .subscribe({
-        next: (res: any) => {
-          this.employeeList = res
-        error: () => {
-          // implement error toast?
-        }
-      }});
-  }
-  
-  editEmployee(any:any){
-    // placeholder
+    this.getEmployees();
   }
 
-  deleteEmployee(any:any){
-    // placeholder
+  private getEmployees() {
+    this.http.get(environment.rootApi+"employees/")
+    .subscribe({
+      next: (res: any) => {
+        this.employeeList = res
+        this.getPage();
+      error: () => {
+        // implement error toast?
+      }
+    }});
+  }
+  
+  private getPage() {
+    this.employeePage = this.employeeList.slice(this.firstEmployee, this.lastEmployee);
+  }
+
+  public updatePage(event: PageEvent) {
+    // Calculates page from employee indices
+    this.firstEmployee = event.pageIndex * event.pageSize;
+    this.lastEmployee = this.firstEmployee + event.pageSize;
+    this.getPage();
+  }
+
+  public addEmployee() {
+    const addDialogRef = this.dialog.open(EmployeeFormModalComponent, {
+      restoreFocus: false,
+      data: {
+        action: "Add"
+      }
+    })
+
+    addDialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        let headers = new HttpHeaders();
+        headers = headers.set('Content-Type', 'application/json; charset=utf-8');
+        this.http.post(environment.rootApi+"employees/create/", 
+          {
+            first_name: result.firstName,
+            last_name: result.lastName,
+            salary: result.salary
+          },
+          { 
+            headers: headers
+          }).subscribe({
+            next: (res: any) => {
+              this.getEmployees();
+              // implement success toast?
+            error: () => {
+              // implement error toast?
+            }
+          }});
+      } 
+    });
+  }
+
+  public editEmployee(employee: any){
+    const editDialogRef = this.dialog.open(EmployeeFormModalComponent, {
+      restoreFocus: false,
+      data: {
+        action: "Edit",
+        ...employee
+      }
+    })
+
+    editDialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        let headers = new HttpHeaders();
+        headers = headers.set('Content-Type', 'application/json; charset=utf-8');
+        this.http.put(environment.rootApi+`employees/${employee.id}/edit/`, 
+          {
+            first_name: result.firstName,
+            last_name: result.lastName,
+            salary: result.salary
+          },
+          { 
+            headers: headers
+          }).subscribe({
+            next: (res: any) => {
+              this.getEmployees();
+              // implement success toast?
+            error: () => {
+              // implement error toast?
+            }
+          }});
+      }
+    });
+  }
+
+  public deleteEmployee(employee: any){
+    const deleteDialogRef = this.dialog.open(DeleteModalComponent, {
+      restoreFocus: false,
+      data: {
+        type: "Employee",
+        value: `${employee.first_name} ${employee.last_name}`,
+      }
+    })
+
+    deleteDialogRef.afterClosed().subscribe(result => {
+      if (result == true) {
+        let headers = new HttpHeaders();
+        headers = headers.set('Content-Type', 'application/json; charset=utf-8');
+        this.http.delete(environment.rootApi+`employees/${employee.id}/delete/`)
+          .subscribe({
+            next: (res: any) => {
+              this.getEmployees();
+              // implement success toast?
+            error: () => {
+              // implement error toast?
+            }
+          }});
+      } 
+    });
   }
 
 }
